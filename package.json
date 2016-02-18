@@ -1,0 +1,54 @@
+{
+  "name": "homestead",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack --config config/webpack.dev.js | webpack-dev-server --port 8080 --config config/webpack.dev.js --hot --history-api-fallback --progress --colors --inline --content-base ./build",
+    "build": "webpack --config config/webpack.prod.js --progress --profile --colors"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FakeYou/homestead.git"
+  },
+  "author": "Andre Nanninga <ag.nanninga@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FakeYou/homestead/issues"
+  },
+  "browserify": {
+    "transform": [
+      "glslify"
+    ]
+  },
+  "homepage": "https://github.com/FakeYou/homestead#readme",
+  "dependencies": {
+    "@superguigui/wagner": "^0.1.13",
+    "dat-gui": "^0.5.0",
+    "glsl-checker": "^1.0.1",
+    "glsl-noise": "0.0.0",
+    "glslify": "^5.0.0",
+    "glslify-fancy-imports": "^1.0.1",
+    "glslify-hex": "^2.0.1",
+    "lodash": "^3.10.1",
+    "polygon": "^1.0.2",
+    "raw-loader": "^0.5.1",
+    "simplex-noise": "^2.2.0",
+    "three": "^0.73.0",
+    "transform-loader": "^0.2.3",
+    "voronoi": "^1.0.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.3.26",
+    "babel-loader": "^6.2.0",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-register": "^6.3.13",
+    "browserify": "^12.0.1",
+    "clean-webpack-plugin": "^0.1.3",
+    "copy-webpack-plugin": "^0.3.3",
+    "html-webpack-plugin": "^1.7.0",
+    "ify-loader": "mattdesl/ify-loader#fix-errors",
+    "webpack": "^1.12.9",
+    "webpack-dev-server": "^1.14.0"
+  }
+}
