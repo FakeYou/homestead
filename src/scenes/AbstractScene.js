@@ -3,7 +3,7 @@ import 'controls/OrbitControls'
 
 export default class AbstractScene {
   constructor() {
-    this._camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
+    this._camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
     this._camera.position.z = 400;
 
     this._scene = new THREE.Scene();

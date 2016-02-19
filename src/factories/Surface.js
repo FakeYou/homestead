@@ -7,7 +7,7 @@ import { times } from 'lodash';
 import World from 'structures/World';
 
 export default class Surface {
-	constructor(width=512, height=512, nodes=100) {
+	constructor(width=1024, height=1024, nodes=1200) {
 		this.width = width;
 		this.height = height;
 

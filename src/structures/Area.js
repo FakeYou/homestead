@@ -4,22 +4,24 @@ import Polygon from 'polygon';
 import TerrainMaterial from 'materials/Terrain';
 
 export default class Area {
-	constructor(cell, height) {
+	constructor(world, cell, height) {
+		this.world = world;
 		this._id = cell.site.voronoiId;
 		this._cell = cell;
-		this._height = height;
 
 		let points = cell.halfedges.map(halfedge => halfedge.getStartpoint());
 		this._polygon = new Polygon(points);
 
+
 		// ensure that every point has its id
 		points.forEach((point, i) => {
 			this._polygon.points[i].id = point.id;
-			this._polygon.points[i].z = this._height;
 		});
 
+		this.height = height;
+
 		this._polygon.rewind(true);
-		this._polygon.scale(1 - (Math.random() / 2 + 0.3));
+		this._polygon.scale(1 - (Math.random() / 1.5 + 0.1));
 
 		this._neighbors = {};
 	}
@@ -40,20 +42,22 @@ export default class Area {
 		return this._neighbors;
 	}
 
+	get height() {
+		return this._height;
+	}
+
 	set height(height) {
 		this._height = height;
 
 		let points = this._cell.halfedges.map(halfedge => halfedge.getStartpoint());
 		points.forEach((point, i) => {
-			this._polygon.points[i].z = this._height;
+			// this._polygon.points[i].z = this._height;
+			this._polygon.points[i].z = this._height + this.world._simplex.noise2D(point.x/2048, point.y/1024) * 96;
 		});
 	}
 
 	get mesh() {
 		let geometry = new THREE.Geometry();
-		// let material = new THREE.MeshBasicMaterial({ color: '#'+(Math.random()*0xFFFFFF<<0).toString(16), wireframe: false });
-		let material = new THREE.MeshNormalMaterial({ wireframe: false });
-		// let material = new TerrainMaterial();
 
 		this._polygon.points.forEach(point => {
 			geometry.vertices.push(new THREE.Vector3(point.x, point.z, point.y));
@@ -66,7 +70,7 @@ export default class Area {
 		geometry.computeFaceNormals();
 		geometry.computeVertexNormals(); 	
 
-		return new THREE.Mesh(geometry, material);
+		return new THREE.Mesh(geometry, null);
 	}
 
 	addNeighbor(neighbor) {

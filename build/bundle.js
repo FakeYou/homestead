@@ -53465,10 +53465,6 @@
 
 						if (neighbor.center.x > currentArea.center.x || Math.random() < 0.9) {
 							currentArea = neighbor;
-
-							if (Math.random() > 0.5) {
-								return;
-							}
 						}
 					});
 

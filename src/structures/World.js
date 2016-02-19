@@ -17,14 +17,20 @@ export default class World {
 			};
 		});
 		
-		this._mesh = new THREE.Object3D();
+		this._mesh = new THREE.Mesh(
+			new THREE.Geometry(),
+			new THREE.MeshNormalMaterial()
+		);
+
+		this._mesh.material.side = THREE.DoubleSide;
+
 		this._simplex = new SimplexNoise();
 		this._voronoi = new Voronoi();
 		this._diagram = null;
 
 		this._computeVoronoi(this.nodes);
 
-		times(4, () => {
+		times(0, () => {
 			this.nodes = this._relaxNodes(this._diagram);
 			this._computeVoronoi(this.nodes);
 		})
@@ -32,12 +38,12 @@ export default class World {
 		this._markVertices(this._diagram);
 		this._areas = this._createAreas(this._diagram);
 		this._setAreaNeighbors(this._diagram, this._areas);
-		this._createRiver(this._diagram, this._areas);
+		// this._createRiver(this._diagram, this._areas);
 		this._createAreaTriangles(this._diagram, this._areas);
 		this._createAreaBorders(this._diagram, this._areas);
 
 		values(this._areas).forEach(area => {
-			this._mesh.add(area.mesh);
+			this._mesh.geometry.merge(area.mesh.geometry);
 		});
 	}
 
@@ -79,8 +85,19 @@ export default class World {
 		let areas = {};
 
 		this._diagram.cells.forEach(cell => {
-			let height = this._simplex.noise2D(cell.site.x/400, cell.site.y/400) * 24;
-			let area = new Area(cell, height);
+			let height = 0;
+
+			let mountain = this._simplex.noise2D(cell.site.x/1536, cell.site.y/1024) * 256;
+			mountain += this._simplex.noise2D(cell.site.x/-1536, cell.site.x/1024) * 256;
+			if(mountain < 0) {
+				mountain /= 4;
+			}
+
+			height += mountain;
+			height += this._simplex.noise2D(cell.site.x/400, cell.site.y/400) * 16;
+			height += this._simplex.noise2D(cell.site.x/80, cell.site.y/80) * 8;
+
+			let area = new Area(this, cell, height);
 			areas[area.id] = area;
 		});
 
@@ -117,16 +134,15 @@ export default class World {
 		while(currentArea !== null) {
 			let neighbors = currentArea.neighbors;
 			let id = currentArea.id;
-			currentArea.height = -32;
+			currentArea.height = -18;
 
 			values(neighbors).forEach(neighbor => {
 				if(Math.abs(neighbor.center.y) > this.height/2 - this.height / 5) {
 					return;
 				}
 
-				if(neighbor.center.x > currentArea.center.x || Math.random() < 0.9) {
+				if(neighbor.center.x > currentArea.center.x || Math.random() < 0.3) {
 					currentArea = neighbor;
-
 				}
 			});
 
@@ -166,7 +182,7 @@ export default class World {
 				geometry.computeFaceNormals();
 				geometry.computeVertexNormals(); 
 
-				this._mesh.add(new THREE.Mesh(geometry, material));
+				this._mesh.geometry.merge(geometry);
 			}
 		});
 	}
@@ -206,7 +222,7 @@ export default class World {
 			geometry.computeFaceNormals();
 			geometry.computeVertexNormals(); 	
 
-			this._mesh.add(new THREE.Mesh(geometry, material));
+			this._mesh.geometry.merge(geometry);
 		});
 	}
 }
